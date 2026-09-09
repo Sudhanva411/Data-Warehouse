@@ -1,7 +1,7 @@
-## Data Warehouse Project
+# Data Warehouse Project
 Building a modern data warehouse using PostgreSQL, including ETL process, data modelling and analytics.
 
-# 🚀 Project Requirements
+## 🚀 Project Requirements
 
 ### Building the Data Warehouse (Data Engineering)
 
