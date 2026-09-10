@@ -1,11 +1,21 @@
--- 1. Drop the old version of the procedure if it exists to avoid conflicts
+-- 1. Drop old version to prevent conflicts
 DROP PROCEDURE IF EXISTS bronze.load_all_staging_tables();
 
--- 2. Create the updated procedure with built-in logging
+-- 2. Create the procedure with timing trackers
 CREATE OR REPLACE PROCEDURE bronze.load_all_staging_tables()
 LANGUAGE plpgsql
 AS $$
+DECLARE
+    start_time TIMESTAMP;
+    end_time   TIMESTAMP;
+    duration   INTERVAL;
 BEGIN
+    -- Capture the exact live start time
+    start_time := clock_timestamp();
+    RAISE NOTICE '==================================================';
+    RAISE NOTICE 'ETL PIPELINE STARTED AT: %', start_time;
+    RAISE NOTICE '==================================================';
+
     -- Step 1: Clear old data from all tables
     RAISE NOTICE 'Step 1: Truncating old data from tables...';
     TRUNCATE TABLE bronze.crm_cust_info;
@@ -37,10 +47,17 @@ BEGIN
     COPY bronze.erp_px_cat_g1v2 FROM 'C:/postgrestmp/source_erp/PX_CAT_G1V2.csv' WITH (FORMAT csv, HEADER true, DELIMITER ',');
     RAISE NOTICE '-> Loaded: erp_px_cat_g1v2';
 
+    -- Capture live end time and calculate the total delta duration
+    end_time := clock_timestamp();
+    duration := end_time - start_time;
+
+    RAISE NOTICE '==================================================';
     RAISE NOTICE 'Step 3: Database pipeline execution complete!';
+    RAISE NOTICE 'ETL PIPELINE ENDED AT:   %', end_time;
+    RAISE NOTICE 'TOTAL ETL DURATION:     %', duration;
+    RAISE NOTICE '==================================================';
 END;
 $$;
-
 
 -- Need to use CALL funtion to execute the above code.
 CALL bronze.load_all_staging_tables();
