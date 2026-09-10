@@ -38,9 +38,6 @@ BEGIN
     RAISE NOTICE '-> Loaded: erp_px_cat_g1v2';
 
     RAISE NOTICE 'Step 3: Database pipeline execution complete!';
-    
-    -- Stored procedures require explicit transaction control inside their block
-    COMMIT;
 END;
 $$;
 
